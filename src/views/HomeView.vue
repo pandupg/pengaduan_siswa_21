@@ -18,7 +18,7 @@
 
         <div style="margin-bottom: 15px;">
           <label for="pilihan" style="display: block; font-weight: bold;">Jenis Pengaduan</label>
-          <select id="" v-model="formData.jenis" class="form-input">
+          <select id="" v-model="formData.jenis" class="form-select">
             <option value="sarpra">Sarana/Prasarana</option>
             <option value="guru">Guru</option>
             <option value="siswa">Siswa</option>
@@ -52,7 +52,8 @@
 }
 
 .form-container {
-  width: 600px;
+  width: 90%;
+  max-width: 600px;
   margin: 0 auto;
   margin-top: 40px;
   background-color: #ffffff;
@@ -60,8 +61,16 @@
   padding: 20px;
 }
 
+.form-select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
 .form-input,
-.form-textarea {
+.form-textarea,
+select.form-input {
   width: calc(100% - 18px);
   padding: 8px;
   border-radius: 5px;
