@@ -52,7 +52,7 @@
 }
 
 .form-container {
-  width: 600px;
+  width: 80%;
   margin: 0 auto;
   margin-top: 40px;
   background-color: #ffffff;
