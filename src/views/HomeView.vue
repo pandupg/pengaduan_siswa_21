@@ -56,10 +56,9 @@ body {
 .form-container {
   width: 90%;
   max-width: 600px;
-  margin-left: auto; /* Align to the right */
-  margin-right: auto; /* Align to the left */
+  margin: 0 auto;
   margin-top: 40px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
 }
