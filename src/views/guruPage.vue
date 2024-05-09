@@ -33,7 +33,7 @@
 </template>
 
 <style>
-  .navbar {
+.navbar {
   background-color: #ffffff;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
   padding: 10px 20px;
@@ -43,28 +43,36 @@
   margin: 0;
 }
 
-  .table-container {
-    width: 1500px;
-    margin: 0 auto; /* Untuk membuatnya menjadi di tengah layar */
-    overflow-x: auto; /* Mengizinkan scroll horizontal jika konten melebihi lebar tabel */
+.table-container {
+  width: 1500px;
+  margin: 0 auto; /* Untuk membuatnya menjadi di tengah layar */
+  overflow-x: auto; /* Mengizinkan scroll horizontal jika konten melebihi lebar tabel */
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.custom-table th,
+.custom-table td {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+.custom-table th {
+  background-color: #f2f2f2;
+}
+
+@media (max-width: 767px) {
+  /* Media query untuk perangkat seluler dengan lebar maksimal 767px */
+  .navbar {
+    width: 1500px; /* Atur lebar navbar agar sama dengan lebar tabel */
+    overflow-x: auto; /* Aktifkan scroll horizontal pada navbar */
   }
-  
-  .custom-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .custom-table th,
-  .custom-table td {
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-  }
-  
-  .custom-table th {
-    background-color: #f2f2f2;
-  }
-  </style>
+}
+</style>
 
 <script>
 import { db } from '../firebase.js'
