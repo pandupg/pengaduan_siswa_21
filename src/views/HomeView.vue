@@ -46,8 +46,7 @@ body {
 }
 
 .navbar {
-  margin-left: 0; /* Remove left margin */
-  margin-right: 0; /* Remove right margin */
+  margin: 0;
 }
 
 .navbar-title {
@@ -55,7 +54,7 @@ body {
 }
 
 .form-container {
-  width: 100vw; /* Full viewport width */
+  width: 90%;
   max-width: 600px;
   margin-left: auto; /* Align to the right */
   margin-right: auto; /* Align to the left */

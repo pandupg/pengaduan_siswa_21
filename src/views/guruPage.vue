@@ -3,7 +3,7 @@
     <h1 class="navbar-title">Pengaduan Siswa SMP Lab UM Malang</h1>
   </header>
 
-  <div class="table-container" style="margin-top: 10px;">
+  <div class="table-container" style="margin-top: 20px;">
     <table class="custom-table">
       <thead>
         <tr>
