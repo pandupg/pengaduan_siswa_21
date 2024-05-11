@@ -4,12 +4,13 @@
       <h1 class="navbar-title" style="color: white;">Pengaduan Siswa SMP Lab UM Malang</h1>
     </header>
 
-    <!-- Sort Filter -->
+    <!-- Sort Filter by Type -->
     <div class="sort-filter">
       <label for="sortFilter" class="sort-label">Urutkan berdasarkan:</label>
       <select v-model="sortOption" id="sortFilter" class="sort-select">
         <option value="terbaru">Terbaru</option>
         <option value="terlama">Terlama</option>
+        <option value="jenis">Jenis</option>
       </select>
     </div>
 
@@ -130,6 +131,8 @@ export default {
         return this.pengaduanData.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
       } else if (this.sortOption === 'terlama') {
         return this.pengaduanData.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
+      } else if (this.sortOption === 'jenis') {
+        return this.pengaduanData.slice().sort((a, b) => a.jenis.localeCompare(b.jenis));
       }
     }
   }
@@ -179,6 +182,11 @@ th, td {
 th {
   background-color: #f2f2f2;
 }
+
+td {
+  color: white;
+}
+
 @media screen and (max-width: 600px) {
   table {
       overflow-x: auto;
@@ -186,7 +194,7 @@ th {
   }
   th, td {
       white-space: nowrap;
-      min-width: 150px;
+      min-width: 15px;
   }
 }
 

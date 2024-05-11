@@ -5,6 +5,7 @@
     </header>
 
     <div class="form-container">
+      <h2>FORM PENGADUAN</h2>
       <form @submit.prevent="send" ref="form">
         <div style="margin-bottom: 15px;">
           <label for="Nama" style="display: block; font-weight: bold;">Nama</label>
