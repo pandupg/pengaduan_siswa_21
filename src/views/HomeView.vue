@@ -32,8 +32,8 @@
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-          <button type="submit" style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-family: 'Nunito', sans-serif;">Kirim</button>
-          <button type="button" @click="resetForm" style="background-color: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-family: 'Nunito', sans-serif;">Hapus Form</button>
+          <button :disabled="isSending" type="submit" :style="submitButtonStyle">{{ submitButtonText }}</button>
+          <button type="button" @click="resetForm" style="background-color: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-family: 'Nunito', sans-serif; font-size: 16px;">Hapus Form</button>
         </div>
       </form>
     </div>
@@ -96,20 +96,39 @@ export default {
   name: 'HomeView',
   data() {
     return {
-      formData: {}
+      formData: {},
+      isSending: false // State untuk menunjukkan apakah data sedang dikirim atau tidak
+    }
+  },
+  computed: {
+    submitButtonText() {
+      return this.isSending ? 'Proses...' : 'Kirim';
+    },
+    submitButtonStyle() {
+      return {
+        backgroundColor: this.isSending ? '#6c757d' : '#007bff',
+        color: 'white',
+        padding: '10px 20px',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        fontFamily: 'Nunito, sans-serif',
+        fontSize: '16px'
+      };
     }
   },
   methods: {
     async send() {
       if (this.$refs.form.checkValidity()) {
         try {
-          this.formData.status = false;
+          this.isSending = true; // Set isSending menjadi true sebelum mengirim data
 
           await addDoc(collection(db, 'pengaduan'), this.formData);
-          alert('Pengaduan berhasil');
           this.formData = {}; // Mengosongkan formData setelah berhasil mengirim
         } catch (error) {
           console.log(error);
+        } finally {
+          this.isSending = false; // Set isSending menjadi false setelah selesai mengirim data
         }
       } else {
         alert('Silakan lengkapi semua field sebelum mengirim.');
@@ -127,4 +146,3 @@ link.href = 'https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&di
 link.rel = 'stylesheet';
 document.head.appendChild(link);
 </script>
-

@@ -17,16 +17,16 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(i, index) in pengaduanData" :key="index">
+          <tr v-for="(i, index) in pengaduanData" :key="index" :style="{ backgroundColor: i.status ? '#28a745' : '#6c757d' }">
             <td style="text-align: center;">{{ index + 1 }}</td>
             <td>{{ i.nama }}</td>
             <td style="text-align: center;">{{ i.kelas }}</td>
             <td style="text-align: center;">{{ i.jenis }}</td>
             <td>{{ i.deskripsi }}</td>
             <td style="text-align: center;">
-              <button v-if="!i.status" @click="toggleStatus(i)" style="background-color: #007bff;color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-family: 'Nunito', sans-serif; font-size: 16px;">Selesai</button>
-              <span v-else style="padding: 10px 15px; background-color: #28a745; border-radius: 5px; color: white; cursor: pointer; box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);">Selesai</span>
-              <button @click="deleteData(i)" style="background-color: #dc3545; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-family: 'Nunito', sans-serif; margin-left: 5px; font-size: 16px;">Hapus</button>
+              <button v-if="!i.status && !i.inProcess" @click="toggleStatus(i)" style="background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-family: 'Nunito', sans-serif; font-size: 16px;">Selesai</button>
+              <span v-else-if="i.inProcess" style="color: white; padding: 10px 15px; font-family: 'Nunito', sans-serif; font-size: 16px;">Proses...</span>
+              <button v-if="i.status && !i.inProcess" @click="deleteData(i)" style="background-color: #dc3545; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-family: 'Nunito', sans-serif; margin-left: 5px; font-size: 16px;">Hapus</button>
             </td>
           </tr>
         </tbody>
@@ -34,40 +34,6 @@
     </div>
   </div>
 </template>
-
-<style>
-  .navbar {
-  background-color: #ffffff;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 10px 20px;
-}
-
-.navbar-title {
-  margin: 0;
-}
-
-  .table-container {
-    width: 1500px;
-    margin-left: 20px; 
-    overflow-x: auto; /* Mengizinkan scroll horizontal jika konten melebihi lebar tabel */
-  }
-  
-  .custom-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .custom-table th,
-  .custom-table td {
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-  }
-  
-  .custom-table th {
-    background-color: #f2f2f2;
-  }
-  </style>
 
 <script>
 import { db } from '../firebase.js'
@@ -87,13 +53,14 @@ export default {
     async getData() {
       try {
         const data = await getDocs(collection(db, 'pengaduan'))
-        this.pengaduanData = data.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+        this.pengaduanData = data.docs.map(doc => ({ id: doc.id, ...doc.data(), inProcess: false }))
       } catch (error) {
         console.log(error)
       }
     },
     async toggleStatus(pengaduan) {
       try {
+        pengaduan.inProcess = true; // Set inProcess menjadi true sebelum memproses perubahan status
         const pengaduanRef = doc(db, 'pengaduan', pengaduan.id)
         await updateDoc(pengaduanRef, {
           status: true
@@ -101,22 +68,61 @@ export default {
         this.getData(); // Refresh data after updating status
       } catch (error) {
         console.log(error)
+      } finally {
+        pengaduan.inProcess = false; // Set inProcess menjadi false setelah selesai memproses perubahan status
       }
     },
     async deleteData(pengaduan) {
       try {
+        pengaduan.inProcess = true; // Set inProcess menjadi true sebelum memproses penghapusan
         const pengaduanRef = doc(db, 'pengaduan', pengaduan.id)
         await deleteDoc(pengaduanRef)
         this.getData(); // Refresh data after deleting
       } catch (error) {
         console.log(error)
+      } finally {
+        pengaduan.inProcess = false; // Set inProcess menjadi false setelah selesai memproses penghapusan
       }
     },
     refreshData() {
       setInterval(async () => {
         await this.getData(); // Panggil getData setiap 30 detik
-      }, 30000); // Refresh setiap 30 detik (30 detik * 1000 milidetik)
+      }, 15000); // Refresh setiap 30 detik (30 detik * 1000 milidetik)
     }
   }
 }
 </script>
+
+<style>
+.navbar {
+  background-color: #ffffff;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px 20px;
+}
+
+.navbar-title {
+  margin: 0;
+}
+
+.table-container {
+  width: 1500px;
+  margin-left: 20px; 
+  overflow-x: auto; /* Mengizinkan scroll horizontal jika konten melebihi lebar tabel */
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.custom-table th,
+.custom-table td {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+.custom-table th {
+  background-color: #f2f2f2;
+}
+</style>
