@@ -1,34 +1,37 @@
 <template>
-  <header class="navbar">
-    <h1 class="navbar-title">Pengaduan Siswa SMP Lab UM Malang</h1>
-  </header>
+  <div>
+    <header class="navbar" style="background-color: #007bff;">
+      <h1 class="navbar-title" style="color: white;">Pengaduan Siswa SMP Lab UM Malang</h1>
+    </header>
 
-  <div class="table-container" style="margin-top: 20px;">
-    <table class="custom-table">
-      <thead>
-        <tr>
-          <th style="width: 15px; text-align: center;">No</th>
-          <th style="width: 300px; text-align: center;">Nama</th>
-          <th style="width: 75px; text-align: center;">Kelas</th>
-          <th style="width: 75px; text-align: center;">Jenis</th>
-          <th style="text-align: center;">Deskripsi</th>
-          <th style="width: 150px; text-align: center;">Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(i, index) in pengaduanData" :key="index">
-          <td style="text-align: center;">{{ index + 1 }}</td>
-          <td>{{ i.nama }}</td>
-          <td style="text-align: center;">{{ i.kelas }}</td>
-          <td style="text-align: center;">{{ i.jenis }}</td>
-          <td>{{ i.deskripsi }}</td>
-          <td style="text-align: center;">
-            <button v-if="!i.status" @click="toggleStatus(i)" style="background-color: red; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-family: 'Nunito', sans-serif;">Selesai</button>
-            <span v-else>Selesai</span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-container" style="margin-top: 20px;">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th style="width: 15px; text-align: center;">No</th>
+            <th style="width: 150px; text-align: center;">Nama</th>
+            <th style="width: 75px; text-align: center;">Kelas</th>
+            <th style="width: 75px; text-align: center;">Jenis</th>
+            <th style="text-align: center;">Deskripsi</th>
+            <th style="width: 250px; text-align: center;">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(i, index) in pengaduanData" :key="index">
+            <td style="text-align: center;">{{ index + 1 }}</td>
+            <td>{{ i.nama }}</td>
+            <td style="text-align: center;">{{ i.kelas }}</td>
+            <td style="text-align: center;">{{ i.jenis }}</td>
+            <td>{{ i.deskripsi }}</td>
+            <td style="text-align: center;">
+              <button v-if="!i.status" @click="toggleStatus(i)" style="background-color: #007bff;color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-family: 'Nunito', sans-serif; font-size: 16px;">Selesai</button>
+              <span v-else style="padding: 10px 15px; background-color: #28a745; border-radius: 5px; color: white; cursor: pointer; box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);">Selesai</span>
+              <button @click="deleteData(i)" style="background-color: #dc3545; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-family: 'Nunito', sans-serif; margin-left: 5px; font-size: 16px;">Hapus</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -45,7 +48,7 @@
 
   .table-container {
     width: 1500px;
-    margin: 0 auto; /* Untuk membuatnya menjadi di tengah layar */
+    margin-left: 20px; 
     overflow-x: auto; /* Mengizinkan scroll horizontal jika konten melebihi lebar tabel */
   }
   
@@ -68,7 +71,7 @@
 
 <script>
 import { db } from '../firebase.js'
-import { getDocs, collection, doc, updateDoc } from 'firebase/firestore'
+import { getDocs, collection, doc, updateDoc, deleteDoc } from 'firebase/firestore'
 
 export default {
   data() {
@@ -96,6 +99,15 @@ export default {
           status: true
         })
         this.getData(); // Refresh data after updating status
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    async deleteData(pengaduan) {
+      try {
+        const pengaduanRef = doc(db, 'pengaduan', pengaduan.id)
+        await deleteDoc(pengaduanRef)
+        this.getData(); // Refresh data after deleting
       } catch (error) {
         console.log(error)
       }

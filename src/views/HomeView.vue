@@ -1,7 +1,7 @@
 <template>
   <div>
-    <header class="navbar" style="background-color: #FFFFFF;">
-      <h1 class="navbar-title">Pengaduan Siswa SMP Lab UM Malang</h1>
+    <header class="navbar" style="background-color: #007bff;">
+      <h1 class="navbar-title" style="color: white;">Pengaduan Siswa SMP Lab UM Malang</h1>
     </header>
 
     <div class="form-container">
@@ -31,7 +31,10 @@
           <textarea type="text" v-model="formData.deskripsi" class="form-textarea" required></textarea>
         </div>
 
-        <button type="submit" style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-family: 'Nunito', sans-serif;">Kirim</button>
+        <div style="display: flex; justify-content: space-between;">
+          <button type="submit" style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-family: 'Nunito', sans-serif;">Kirim</button>
+          <button type="button" @click="resetForm" style="background-color: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-family: 'Nunito', sans-serif;">Hapus Form</button>
+        </div>
       </form>
     </div>
   </div>
@@ -54,7 +57,7 @@ body {
 }
 
 .form-container {
-  width: 90%;
+  width: 80%;
   max-width: 600px;
   margin: 0 auto;
   margin-top: 40px;
@@ -97,22 +100,25 @@ export default {
     }
   },
   methods: {
-  async send() {
-    if (this.$refs.form.checkValidity()) {
-      try {
-        this.formData.status = false;
+    async send() {
+      if (this.$refs.form.checkValidity()) {
+        try {
+          this.formData.status = false;
 
-        await addDoc(collection(db, 'pengaduan'), this.formData);
-        alert('Pengaduan berhasil');
-        this.formData = {}; // Mengosongkan formData setelah berhasil mengirim
-      } catch (error) {
-        console.log(error);
+          await addDoc(collection(db, 'pengaduan'), this.formData);
+          alert('Pengaduan berhasil');
+          this.formData = {}; // Mengosongkan formData setelah berhasil mengirim
+        } catch (error) {
+          console.log(error);
+        }
+      } else {
+        alert('Silakan lengkapi semua field sebelum mengirim.');
       }
-    } else {
-      alert('Silakan lengkapi semua field sebelum mengirim.');
+    },
+    resetForm() {
+      this.formData = {}; // Mengosongkan formData saat tombol "Hapus Form" diklik
     }
   }
-},
 }
 
 // Include Nunito font link
@@ -121,3 +127,4 @@ link.href = 'https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&di
 link.rel = 'stylesheet';
 document.head.appendChild(link);
 </script>
+
