@@ -96,7 +96,9 @@ export default {
   name: 'HomeView',
   data() {
     return {
-      formData: {},
+      formData: {
+        date: this.getCurrentDateTime() // Set tanggal dengan waktu saat ini
+      },
       isSending: false // State untuk menunjukkan apakah data sedang dikirim atau tidak
     }
   },
@@ -124,7 +126,7 @@ export default {
           this.isSending = true; // Set isSending menjadi true sebelum mengirim data
 
           await addDoc(collection(db, 'pengaduan'), this.formData);
-          this.formData = {}; // Mengosongkan formData setelah berhasil mengirim
+          this.formData = { date: this.getCurrentDateTime() }; // Mengosongkan formData setelah berhasil mengirim dan mengatur ulang tanggal
         } catch (error) {
           console.log(error);
         } finally {
@@ -135,7 +137,16 @@ export default {
       }
     },
     resetForm() {
-      this.formData = {}; // Mengosongkan formData saat tombol "Hapus Form" diklik
+      this.formData = { date: this.getCurrentDateTime() }; // Mengosongkan formData saat tombol "Hapus Form" diklik dan mengatur ulang tanggal
+    },
+    getCurrentDateTime() {
+      const now = new Date();
+      const date = `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`;
+      const time = `${this.padZero(now.getHours())}:${this.padZero(now.getMinutes())}:${this.padZero(now.getSeconds())}`;
+      return `${date} ${time}`; // Mengembalikan tanggal dan waktu dalam format yang diinginkan
+    },
+    padZero(value) {
+      return value < 10 ? `0${value}` : value; // Menambahkan angka 0 di depan jika nilai kurang dari 10
     }
   }
 }

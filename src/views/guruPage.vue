@@ -4,6 +4,16 @@
       <h1 class="navbar-title" style="color: white;">Pengaduan Siswa SMP Lab UM Malang</h1>
     </header>
 
+    <!-- Sort Filter -->
+    <div class="sort-filter">
+      <label for="sortFilter" class="sort-label">Urutkan berdasarkan:</label>
+      <select v-model="sortOption" id="sortFilter" class="sort-select">
+        <option value="terbaru">Terbaru</option>
+        <option value="terlama">Terlama</option>
+      </select>
+    </div>
+
+    <!-- Table -->
     <div class="table-container" style="margin-top: 20px;">
       <table class="custom-table">
         <thead>
@@ -13,24 +23,36 @@
             <th style="width: 75px; text-align: center;">Kelas</th>
             <th style="width: 75px; text-align: center;">Jenis</th>
             <th style="text-align: center;">Deskripsi</th>
+            <th style="width: 75px; text-align: center;">Tanggal</th>
             <th style="width: 250px; text-align: center;">Status</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(i, index) in pengaduanData" :key="index" :style="{ backgroundColor: i.status ? '#28a745' : '#6c757d' }">
+          <tr v-for="(i, index) in sortedPengaduanData" :key="index" :style="{ backgroundColor: i.status ? '#28a745' : '#6c757d' }">
             <td style="text-align: center;">{{ index + 1 }}</td>
             <td>{{ i.nama }}</td>
             <td style="text-align: center;">{{ i.kelas }}</td>
             <td style="text-align: center;">{{ i.jenis }}</td>
             <td>{{ i.deskripsi }}</td>
+            <td>{{ i.date }}</td>
             <td style="text-align: center;">
-              <button v-if="!i.status && !i.inProcess" @click="toggleStatus(i)" style="background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-family: 'Nunito', sans-serif; font-size: 16px;">Selesai</button>
-              <span v-else-if="i.inProcess" style="color: white; padding: 10px 15px; font-family: 'Nunito', sans-serif; font-size: 16px;">Proses...</span>
-              <button v-if="i.status && !i.inProcess" @click="deleteData(i)" style="background-color: #dc3545; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-family: 'Nunito', sans-serif; margin-left: 5px; font-size: 16px;">Hapus</button>
+              <button v-if="!i.status && !i.inProcess" @click="toggleStatus(i)" class="btn-selesai">Selesai</button>
+              <span v-else-if="i.inProcess" class="proses-text">Proses...</span>
+              <button v-if="i.status && !i.inProcess" @click="deleteData(i)" class="btn-hapus">Hapus</button>
             </td>
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- Empty Data Message -->
+    <div style="margin-top: 20px; padding: 10px; text-align: center;">
+      <p v-if="pengaduanData.length === 0" class="empty-message">Belum ada pengaduan yang tersedia.</p>
+      <div v-else class="note-container">
+        <p>*Catatan: </p>
+        <p v-if="pengaduanData.some(item => !item.status)" class="gray-note">Warna abu-abu menunjukkan pengaduan yang belum selesai.</p>
+        <p v-if="pengaduanData.some(item => item.status)" class="green-note">Warna hijau menunjukkan pengaduan yang sudah selesai.</p>
+      </div>
     </div>
   </div>
 </template>
@@ -42,10 +64,17 @@ import { getDocs, collection, doc, updateDoc, deleteDoc } from 'firebase/firesto
 export default {
   data() {
     return {
-      pengaduanData: []
+      pengaduanData: [],
+      sortOption: 'terbaru' // Default filter: terbaru
+    }
+  },
+  computed: {
+    sortedPengaduanData() {
+      return this.sortData();
     }
   },
   mounted() {
+    this.check();
     this.getData(); // Panggil getData saat komponen dimount
     this.refreshData(); // Panggil refreshData untuk memperbarui data setiap 30 detik
   },
@@ -88,41 +117,120 @@ export default {
       setInterval(async () => {
         await this.getData(); // Panggil getData setiap 30 detik
       }, 15000); // Refresh setiap 30 detik (30 detik * 1000 milidetik)
+    },
+    check(){
+      if(!localStorage.getItem('isLoggedIn')){
+          this.$router.push('/login')
+      } else {
+          console.log('selamat datang')
+      }
+    },
+    sortData() {
+      if (this.sortOption === 'terbaru') {
+        return this.pengaduanData.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
+      } else if (this.sortOption === 'terlama') {
+        return this.pengaduanData.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
+      }
     }
   }
 }
 </script>
 
 <style>
+/* Navbar Style */
 .navbar {
-  background-color: #ffffff;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #007bff;
   padding: 10px 20px;
 }
-
 .navbar-title {
+  color: white;
   margin: 0;
 }
 
-.table-container {
-  width: 1500px;
-  margin-left: 20px; 
-  overflow-x: auto; /* Mengizinkan scroll horizontal jika konten melebihi lebar tabel */
+/* Sort Filter Style */
+.sort-filter {
+  margin-top: 20px;
+  padding: 10px;
+  text-align: center;
+}
+.sort-label {
+  color: #007bff;
+  font-weight: bold;
+  margin-right: 10px;
+}
+.sort-select {
+  padding: 5px;
+  border-radius: 5px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
 }
 
+/* Table Style */
 .custom-table {
   width: 100%;
   border-collapse: collapse;
+  border-spacing: 0;
 }
-
-.custom-table th,
-.custom-table td {
-  border: 1px solid #dddddd;
-  text-align: left;
+th, td {
   padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+th {
+  background-color: #f2f2f2;
+}
+@media screen and (max-width: 600px) {
+  table {
+      overflow-x: auto;
+      display: block;
+  }
+  th, td {
+      white-space: nowrap;
+      min-width: 150px;
+  }
 }
 
-.custom-table th {
-  background-color: #f2f2f2;
+/* Button Style */
+.btn-selesai {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+}
+.proses-text {
+  color: white;
+  padding: 10px 15px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+}
+.btn-hapus {
+  background-color: #dc3545;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  margin-left: 5px;
+  font-size: 16px;
+}
+
+/* Empty Data Message Style */
+.empty-message {
+  color: #6c757d;
+  font-family: 'Nunito', sans-serif;
+}
+.note-container {
+  font-family: 'Nunito', sans-serif;
+}
+.gray-note {
+  color: #6c757d;
+}
+.green-note {
+  color: #28a745;
 }
 </style>
