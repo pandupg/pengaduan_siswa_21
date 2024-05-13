@@ -128,9 +128,25 @@ export default {
     },
     sortData() {
       if (this.sortOption === 'terbaru') {
-        return this.pengaduanData.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
+        return this.pengaduanData.slice().sort((a, b) => {
+          const [dateA, timeA] = a.date.split(' ');
+          const [dateB, timeB] = b.date.split(' ');
+          if (dateA !== dateB) {
+            return new Date(dateB) - new Date(dateA); // Urutkan berdasarkan tanggal terlebih dahulu
+          } else {
+            return timeB.localeCompare(timeA); // Jika tanggal sama, urutkan berdasarkan waktu
+          }
+        });
       } else if (this.sortOption === 'terlama') {
-        return this.pengaduanData.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
+        return this.pengaduanData.slice().sort((a, b) => {
+          const [dateA, timeA] = a.date.split(' ');
+          const [dateB, timeB] = b.date.split(' ');
+          if (dateA !== dateB) {
+            return new Date(dateA) - new Date(dateB); // Urutkan berdasarkan tanggal terlebih dahulu
+          } else {
+            return timeA.localeCompare(timeB); // Jika tanggal sama, urutkan berdasarkan waktu
+          }
+        });
       } else if (this.sortOption === 'jenis') {
         return this.pengaduanData.slice().sort((a, b) => a.jenis.localeCompare(b.jenis));
       }
